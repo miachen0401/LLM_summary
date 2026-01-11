@@ -40,10 +40,10 @@ class BGEEncoder(nn.Module):
         Returns:
             (B, H) pooled embeddings.
         """
-        mask = attention_mask.unsqueeze(-1).float()
-        summed = torch.sum(hidden_states * mask, dim=1)
-        counts = torch.clamp(mask.sum(dim=1), min=1e-6)
-        return summed / counts
+        mask = attention_mask.unsqueeze(-1).float() # (B, T, 1)
+        summed = torch.sum(hidden_states * mask, dim=1) # (B, H)
+        counts = torch.clamp(mask.sum(dim=1), min=1e-6) # (B, 1)
+        return summed / counts # (B, H)
 
     def encode(self, text: str, device: torch.device):
         tokens = self.tokenizer(
@@ -51,14 +51,14 @@ class BGEEncoder(nn.Module):
             padding = True,
             truncation=True,
             max_length=512,
-            return_tensors="pt").to(device)
+            return_tensors="pt").to(device) # (B, T)
         
-        outputs = self.model(**tokens)
+        outputs = self.model(**tokens) # (B, T, H)
         pooled = self.mean_pooling(
             outputs.last_hidden_state,
             tokens["attention_mask"],
-        )
-        return f.normalize(pooled, p=2, dim=-1)
+        ) # (B, H)
+        return f.normalize(pooled, p=2, dim=-1) # (B, H)
 
 class DenseRetrievalLoss(nn.Module):
     """Contrastive loss using in-batch negatives."""
@@ -78,12 +78,12 @@ class DenseRetrievalLoss(nn.Module):
         Returns:
             Scalar loss.
         """
-        logits = query_emb @ passage_emb.t()
+        logits = query_emb @ passage_emb.t() # (B, B)
         labels = torch.arange(
             logits.size(0),
             device=logits.device,
-        )
-        return f.cross_entropy(logits, labels)
+        ) # (B,)
+        return f.cross_entropy(logits, labels) # (B,)
 
 from torch.utils.data import DataLoader
 from torch.optim import AdamW
@@ -149,5 +149,6 @@ def train_bge_retriever(
 
 
 if __name__ == "__main__":
-    train_bge_retriever(json_path = 'data/insurance_carrier_qa_dataset.json')
-
+    model = train_bge_retriever(json_path = 'data/insurance_carrier_qa_dataset.json',
+                                epochs=50)
+    #doc_embeddings = model.encode(all_answers, device).cpu().numpy()
