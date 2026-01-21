@@ -1,11 +1,11 @@
 # RAG Dense Retriever Training System
-### Insurance Carrier Q&A Domain
+### Proteomics & Biological Pathway Domain
 
 ---
 
 ## Project Overview
 
-This project implements a **Dense Passage Retrieval (DPR)** training pipeline for building a Retrieval-Augmented Generation (RAG) system specialized in insurance carrier information. The system fine-tunes a **BGE (BAAI General Embedding)** model to learn semantic mappings between natural language questions and their corresponding answers about insurance carriers.
+This project implements a **Dense Passage Retrieval (DPR)** training pipeline for building a Retrieval-Augmented Generation (RAG) system specialized in proteomics data insights, biological pathway analysis, and payload understanding. The system fine-tunes a **BGE (BAAI General Embedding)** model to learn semantic mappings between natural language questions and their corresponding answers about protein structures, signaling pathways, and therapeutic payloads.
 
 The trained retriever can be integrated into a RAG pipeline where:
 1. User submits a natural language question
@@ -118,24 +118,24 @@ The training data is stored in JSON format with the following structure:
 | Metric | Value |
 |--------|-------|
 | Total Q&A pairs | ~7,775 |
-| File location | `data/insurance_carrier_qa_dataset.json` |
+| File location | `data/proteomics_qa_dataset.json` |
 
 ### Question Types Covered
 
 | Type | Example |
 |------|---------|
-| Entity lookup | `"Tell me about <Insurance Company Name>"` |
-| NAIC code lookup | `"Which insurance carrier has NAIC code <XXXXX>?"` |
-| Business line queries | `"What lines of business does <Company> write?"` |
-| Primary LOB queries | `"What is the primary line of business for <Company>?"` |
-| Program queries | `"What insurance programs does <Company> offer?"` |
+| Protein function | `"What is the function of <Protein Name>?"` |
+| Pathway queries | `"Which signaling pathway involves <Gene/Protein>?"` |
+| Payload mechanism | `"How does <Payload> achieve cellular internalization?"` |
+| Target identification | `"What are the known targets of <Drug/Antibody>?"` |
+| Expression patterns | `"Where is <Protein> predominantly expressed?"` |
 
 ### Answer Characteristics
 
-- Contains structured insurance carrier information
-- Includes NAIC codes, premium ranges, geographic coverage
-- References Types of Insurance (TOI) codes
-- Covers P&C, Health, Workers Comp, Medicare Supplement lines
+- Contains structured proteomics and biological data
+- Includes protein IDs (UniProt), gene symbols, pathway annotations
+- References biological databases (KEGG, Reactome, GO terms)
+- Covers ADC payloads, linker chemistry, and conjugation mechanisms
 
 ---
 
@@ -171,7 +171,7 @@ python train_RAG.py
 ```
 
 The script will:
-1. Load Q&A pairs from `data/insurance_carrier_qa_dataset.json`
+1. Load Q&A pairs from `data/proteomics_qa_dataset.json`
 2. Initialize BGE encoder from HuggingFace
 3. Train for 50 epochs using contrastive loss
 4. Print loss per epoch
